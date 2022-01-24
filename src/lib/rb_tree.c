@@ -1,15 +1,17 @@
-#include "./rb_tree.h";
+#include "./rb_tree.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 #define INT_MAX 2147483647
 
-rb_tree *create_tree()
+Node *create_node(int key)
 {
-  rb_tree *tree = (rb_tree*) malloc(sizeof(rb_tree));
-  tree->t_nil = create_t_nil();
-  tree->root = NULL;
-  return tree;
+  Node *new_node = (Node*) malloc(sizeof(Node));
+  new_node->key = key;
+  new_node->color = 'R';
+  new_node->left = new_node->right = NULL;
+  new_node->parent = NULL;
+  return new_node;
 }
 
 Node *create_t_nil()
@@ -21,14 +23,26 @@ Node *create_t_nil()
   return t_nil;
 }
 
-Node *create_Node(int key)
+rb_tree *create_tree()
 {
-  Node *new_node = (Node*) malloc(sizeof(Node));
-  new_node->key = key;
-  new_node->color = 'R';
-  new_node->left = new_node->right = NULL;
-  new_node->parent = NULL;
-  return new_node;
+  rb_tree *tree = (rb_tree*) malloc(sizeof(rb_tree));
+  tree->t_nil = create_t_nil();
+  tree->root = NULL;
+  return tree;
+}
+
+void pre_order_rec(Node *root, Node *t_nil) 
+{
+  if (root == t_nil)
+    return;
+  printf("key => %d, color => %c\n", root->key, root->color);
+  pre_order_rec(root->left, t_nil); 
+  pre_order_rec(root->right, t_nil);
+}
+
+void pre_order(rb_tree *tree) 
+{
+  pre_order_rec(tree->root, tree->t_nil);
 }
 
 void left_rotate(Node *root, Node *x, Node *t_nil)
@@ -69,7 +83,7 @@ void right_rotate(Node *root, Node *y, Node *t_nil)
   y->parent = x;
 }
 
-void rb_fixed_up(Node *root, Node *z, Node *t_nil)
+void rb_insert_fixup(Node *root, Node *z, Node *t_nil)
 {
   while (z->parent->color == 'R') {
     if (z->parent == z->parent->parent->left) {
@@ -86,10 +100,24 @@ void rb_fixed_up(Node *root, Node *z, Node *t_nil)
         }
         z->parent->color = 'B';
         z->parent->parent->color = 'R';
-        right_rotate(root, z->parent->parent, t_nil)
+        right_rotate(root, z->parent->parent, t_nil);
       }
     } else {
-      //
+      Node *y = z->parent->parent->left;
+      if (y->color == 'R') {
+        z->parent->color = 'B';
+        y->color = 'B';
+        z->parent->parent->color = 'R';
+        z = z->parent->parent;
+      } else {
+        if (z == z->parent->left) {
+          z = z->parent;
+          right_rotate(root, z, t_nil);
+        }
+        z->parent->color = 'B';
+        z->parent->parent->color = 'R';
+        left_rotate(root, z->parent->parent, t_nil);
+      }
     }
   }
   root->color = 'B';
@@ -118,4 +146,13 @@ Node *insert_rb_tree_rec(Node *root, Node *z, Node *t_nil)
   z->left = t_nil;  // Setando os valores dos ponteiros left e right desse novo vertice para t_nil
   z->color = 'R';   // Vertices sempre estão na cor vermelha
   rb_insert_fixup(root, z, t_nil);
+  return root;
 }
+
+void insert_tree(rb_tree *tree, int key) 
+{
+  Node *z = create_node(key);
+  tree->root = insert_rb_tree_rec(tree->root, z, tree->t_nil);
+}
+
+
