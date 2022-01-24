@@ -12,9 +12,10 @@ typedef struct node
 
 typedef struct
 {
-  Node *node;
-} Rb_tree;
+  Node *root;
+  Node *t_nil;
+} rb_tree;
 
-void Insert(Rb_tree *tree, int key);
+void Insert(rb_tree *tree, int key);
 
 #endif
