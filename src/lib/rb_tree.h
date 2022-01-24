@@ -16,6 +16,8 @@ typedef struct
   Node *t_nil;
 } rb_tree;
 
-void Insert(rb_tree *tree, int key);
+rb_tree *create_tree();
+void insert_tree(rb_tree *tree, int key);
+void pre_order(rb_tree *tree);
 
 #endif
