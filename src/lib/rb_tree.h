@@ -10,14 +10,8 @@ typedef struct node
   struct node *parent;
 } Node;
 
-typedef struct
-{
-  Node *root;
-  Node *t_nil;
-} rb_tree;
-
-rb_tree *create_tree();
-void insert_tree(rb_tree *tree, int key);
-void pre_order(rb_tree *tree);
-
+Node *create_t_nil();
+Node *create_node(int key);
+void insert_tree(Node **root, int key, Node **t_nil);
+void in_order(Node *root, Node *t_nil);
 #endif
