@@ -3,11 +3,11 @@
 
 typedef struct node
 {
-    struct node *left;
-    struct node *right;
-    struct node *parent;
-    int key;
-    char color;
+  struct node *left;
+  struct node *right;
+  struct node *parent;
+  int key;
+  char color;
 } Node;
 
 Node *create_node(int key);
