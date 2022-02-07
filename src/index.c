@@ -17,6 +17,9 @@ int main(int argc, char **argv)
   insert_tree(&root, create_node(22), tnil);
   insert_tree(&root, create_node(25), tnil);
 
+  int size = tree_size(root, tnil);
+  printf("Size => %d\n", size);
+
   pre_order(root, tnil);
   return 0;
 }
