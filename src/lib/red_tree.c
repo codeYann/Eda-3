@@ -6,7 +6,7 @@ const int max_int = 2147483647;
 
 Node *create_node(int key)
 {
-  Node *node = (Node *)malloc(sizeof(Node));  
+  Node *node = (Node*) malloc(sizeof(Node));
   node->color = 'R';
   node->key = key;
   node->left = NULL;
@@ -25,9 +25,26 @@ Node *create_tnil()
   tnil->key = max_int;
 }
 
+void tree_size_rec(Node *root, Node *tnil, int *size)
+{
+  (*size) += 1;
+  if (root->left != tnil) {
+    tree_size_rec(root->left, tnil, size);
+  }
+  if (root->right != tnil) {
+    tree_size_rec(root->right, tnil, size);
+  }
+}
+
+int tree_size(Node *root, Node *tnil) 
+{
+  int size = 0;
+  tree_size_rec(root, tnil, &size);
+  return size;
+}
+
 void pre_order(Node *root, Node *tnil)
 {
-  tnil->key = max_int;
   printf("Key: %03d, color: %c\n", root->key, root->color);
   if (root->left != tnil) {
     pre_order(root->left, tnil);
@@ -97,7 +114,7 @@ void red_black_fixed(Node **root, Node *z, Node *tnil)
         }
         z->parent->color = 'B';
         z->parent->parent->color = 'R';
-        right_rotate(root, z->parent->parent,tnil);
+        right_rotate(root, z->parent->parent, tnil);
       }
     } else {
       Node *uncle = z->parent->parent->left;
