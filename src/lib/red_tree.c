@@ -165,7 +165,7 @@ void insert_tree(Node **root, Node *z, Node *tnil)
   while (temp != tnil) {
     y = temp;
     if (z->key == temp->key) {
-      printf("Key already exists\n");
+      // printf("Key already exists\n");
       y = NULL;
       temp = tnil;
     } else if (z->key < temp->key) {
@@ -294,4 +294,21 @@ void remove_tree(Node **root, Node *z, Node *tnil)
   }
   if (first_color == 'B')
     remove_fixed(root, x, tnil);
+}
+
+void clean_nodes_rec(Node *root, Node *tnil) 
+{
+  if (root->left != tnil) {
+    clean_nodes_rec(root->left, tnil);
+  }
+  if (root->right != tnil) {
+    clean_nodes_rec(root->right, tnil);
+  }
+  free(root);
+}
+
+void clean_nodes(Node **root, Node *tnil) 
+{
+  clean_nodes_rec((*root), tnil);
+  (*root) = tnil;
 }
