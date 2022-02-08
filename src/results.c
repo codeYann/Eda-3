@@ -4,58 +4,40 @@
 #include <time.h>
 #include <stdbool.h>
 
-int black_height_traversal(Node *aux, Node *tnil) {
-	if(aux == tnil)
-		return 1;
+const int size = 100;
 
-	int left_height = black_height_traversal(aux->left, tnil),
-	    right_height = black_height_traversal(aux->right, tnil);
-
-	if(left_height != right_height || left_height == -1)
-		return -1;
-	else
-		return left_height + (aux->color == 'B'? 1 : 0);
-}
-
-int get_black_height(Node *aux, Node *tnil) {
-	if(aux == tnil)
-		return 1;
-
-	int left_height = black_height_traversal(aux->left, tnil),
-	    right_height = black_height_traversal(aux->right, tnil);
-
-	if(left_height != right_height || left_height == -1)
-		return -1;
-	else
-		return left_height;
-}
-
-bool is_red_black_tree(Node *aux, Node *tnil) {
-	if(aux == tnil)
-		return true;
-
-	if(get_black_height(aux, tnil) != -1)
-		if(is_red_black_tree(aux->left, tnil))
-			return is_red_black_tree(aux->right, tnil);
-
-	return false;
-}
-
-int main(int argc, char **argv) 
+int *create_list(int size)
 {
-  Node *tnil = create_tnil();
-  Node *root = tnil;
-  srand(time(NULL));
-  for (int i = 0; i < 20; i++) {
-    int key = rand() % 2557;
-    printf("Key => %d\n",  key);
-    insert_tree(&root, create_node(key), tnil);
-  }
+	int *list = malloc(sizeof(int) * size);
+	for (int i = 0; i < size; i++)
+	{
+		list[i] = i + 2;
+	}
+	return list;
+}
 
-  printf("Size of root => %d\n", tree_size(root, tnil));
-  printf("Is tree a red black? => %d\n", is_red_black_tree(root, tnil));
-  pre_order(root, tnil);
-  
+int main(int argc, char **argv)
+{
+	Node *tnil = create_tnil();
+	Node *root = tnil;
 
-  return 0;
+	int *list = create_list(size);
+
+	for (int i = 0; i < size; i++) {
+		insert_tree(&root, create_node(list[i]), tnil);
+	}
+	printf("Size of root => %d\n", tree_size(root, tnil));
+	pre_order(root, tnil);
+
+	puts("\nRemoving values\n");
+	for (int i = 0; i < 10; i++) {
+		remove_tree(&root, find(&root, list[i], tnil), tnil);
+	}
+
+	printf("Size of root => %d\n", tree_size(root, tnil));
+	pre_order(root, tnil);
+
+	clean_nodes(&root, tnil);
+	free(list);
+	return 0;
 }
