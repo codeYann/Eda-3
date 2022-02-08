@@ -54,13 +54,34 @@ void pre_order(Node *root, Node *tnil)
   }
 }
 
+Node *find(Node **root, int key, Node *tnil)
+{
+  if ((*root) != tnil) {
+    Node *temp = (*root);
+    Node *pointer = tnil;
+    pointer->key = -1;
+
+    while (temp != tnil) {
+      if (temp->key == key) {
+        pointer = temp;
+        temp = tnil;
+      } else if (key < temp->key) {
+        temp = temp->left;
+      } else {
+        temp = temp->right;
+      }
+    }
+    return pointer;
+  }
+}
+
 void left_rotate(Node **root, Node *z, Node *tnil)
 {
   Node *y = z->right;
   z->right = y->left;
 
-  if (z->right != tnil) {
-    z->right->parent = y;
+  if (y->left != tnil) {
+    y->left->parent = z;
   }
   y->parent = z->parent;
 
@@ -80,8 +101,8 @@ void right_rotate(Node **root, Node *z, Node *tnil) {
   Node *y = z->left;
   z->left = y->right;
 
-  if (z->left != tnil){
-    z->left->parent = z;
+  if (y->right != tnil){
+    y->right->parent = z;
   }
 
   y->parent = z->parent;
@@ -98,7 +119,7 @@ void right_rotate(Node **root, Node *z, Node *tnil) {
   z->parent = y;
 }
 
-void red_black_fixed(Node **root, Node *z, Node *tnil)
+void insert_fixedup(Node **root, Node *z, Node *tnil)
 {
   while (z->parent->color == 'R') {
     if (z->parent == z->parent->parent->left) {
@@ -153,7 +174,6 @@ void insert_tree(Node **root, Node *z, Node *tnil)
       temp = temp->right;
     }
   }
-
   if (y != NULL) {
     z->parent = y;
     if (y == tnil) {
@@ -165,6 +185,113 @@ void insert_tree(Node **root, Node *z, Node *tnil)
     }
     z->left = z->right = tnil;
     z->color = 'R';
-    red_black_fixed(root, z, tnil);
+    insert_fixedup(root, z, tnil);
   }
+}
+
+void move_parent(Node **root, Node *tnil, Node *u, Node *v)
+{
+  if (u->parent == tnil) {
+    (*root) = v;
+  } else {
+    if (u == u->parent->left)
+      u->parent->left = v;
+    else
+      u->parent->right = v;
+  }
+  v->parent = u->parent;
+}
+
+Node *successor(Node *z, Node *tnil) {
+  Node *temp = z;
+  while (temp->left != tnil) {
+    temp = temp->left;
+  }
+  return temp;
+}
+
+void remove_fixed(Node **root, Node *x, Node *tnil)
+{
+  while (x != (*root) && x->color != 'R') {
+    if (x == x->parent->left) {
+      Node *w = x->parent->right;
+      if (w->color == 'R') {
+        w->color = 'B';
+        x->parent->color = 'R';
+        left_rotate(root, x->parent, tnil);
+        w = x->parent->right;
+      }
+      if (w->left->color == 'B' && w->right->color == 'B') {
+        w->color = 'R';
+        x = x->parent;
+      } else {
+        if (w->right->color == 'B') {
+          w->left->color = 'B';
+          w->color = 'R';
+          right_rotate(root, w, tnil);
+          w = x->parent->right;
+        }
+        w->color = x->parent->color;
+        x->parent->color = 'B';
+        w->right->color = 'B';
+        left_rotate(root, x->parent, tnil);
+        x = (*root);
+      }
+    } else {
+      Node *w = x->parent->left;
+      if (w->color == 'R') {
+        x->parent->color = 'R';
+        w->color = 'B';
+        right_rotate(root, x->parent, tnil);
+        w = x->parent->left;
+      }
+      if (w->right->color == 'B' && w->left->color == 'B') {
+        w->color = 'R';
+        x = x->parent;
+      } else {
+        if (w->left->color == 'B') {
+          w->right->color = 'B';
+          w->color = 'R';
+          left_rotate(root, w, tnil);
+          w = x->parent->left;
+        }
+        w->color = x->parent->color;
+        x->parent->color = 'B';
+        w->left->color = 'B';
+        right_rotate(root, x->parent, tnil);
+        x = (*root);
+      }
+    }
+  }
+  x->color = 'B';
+}
+
+void remove_tree(Node **root, Node *z, Node *tnil)
+{
+  Node *y = z;
+  Node *x;
+  char first_color = y->color;
+  if (y->left == tnil) {
+    x = z->right;
+    move_parent(root, tnil, z, z->right);
+  } else {
+    if (y->right == tnil) {
+      x = z->left;
+      move_parent(root, tnil, z, z->left);
+    } else {
+      y = successor(z, tnil);
+      first_color = y->color;
+      x = y->right;
+      if (y->parent == z) {
+        move_parent(root, tnil, y, x);
+        y->right = z->right;
+        y->parent->right = y;
+      }
+      move_parent(root, tnil, z, y);
+      y->left = z->left;
+      y->left->parent = y;
+    }
+  }
+  if (first_color == 'B')
+    remove_fixed(root, x, tnil);
 }
