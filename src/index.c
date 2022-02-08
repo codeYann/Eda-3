@@ -6,8 +6,6 @@ int main(int argc, char **argv)
   Node *tnil = create_tnil();
   Node *root = tnil;
 
-  
-
   insert_tree(&root, create_node(38), tnil);
   insert_tree(&root, create_node(44), tnil);
   insert_tree(&root, create_node(66), tnil);
@@ -17,9 +15,14 @@ int main(int argc, char **argv)
   insert_tree(&root, create_node(22), tnil);
   insert_tree(&root, create_node(25), tnil);
 
-  int size = tree_size(root, tnil);
-  printf("Size => %d\n", size);
-
+  printf("Size => %d\n", tree_size(root, tnil));
   pre_order(root, tnil);
+
+  remove_tree(&root, find(&root, 3, tnil), tnil);
+
+  printf("Size => %d\n", tree_size(root, tnil));
+  pre_order(root, tnil);
+
+
   return 0;
 }
