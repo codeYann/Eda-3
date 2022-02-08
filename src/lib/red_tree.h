@@ -20,4 +20,6 @@ Node *find(Node **root, int key, Node *tnil);
 void insert_tree(Node **root, Node *z, Node *tnil);
 void remove_tree(Node **root, Node *z, Node *tnil);
 
+void clean_nodes(Node **root, Node *tnil);
+
 #endif
